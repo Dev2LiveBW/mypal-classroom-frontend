@@ -4,6 +4,6 @@ export interface Subject {
     name: string
     description: string
     department: string
-    created_at: string
-    updated_at: string  
+    created_at?: string
+    updated_at?: string  
 }

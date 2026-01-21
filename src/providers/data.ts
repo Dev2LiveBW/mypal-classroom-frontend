@@ -90,7 +90,7 @@ export const ACCA_COURSES: Subject[] = [
 
 export const dataProvider: DataProvider = {
     getList: async<TData extends BaseRecord = BaseRecord>(
-        {resource, filters}: GetListParams): Promise<GetListResponse<TData>> => {  
+        {resource, filters, pagination, sorters}: GetListParams): Promise<GetListResponse<TData>> => {  
         if(resource === "subjects") {
             let data = [...ACCA_COURSES];
 
@@ -107,7 +107,38 @@ export const dataProvider: DataProvider = {
                 });
             }
 
-            return { data: data as unknown as TData[], total: data.length };
+            if (sorters && sorters.length > 0) {
+                data.sort((a, b) => {
+                    const sorter = sorters[0];
+                    // @ts-ignore
+                    const fieldA = a[sorter.field];
+                    // @ts-ignore
+                    const fieldB = b[sorter.field];
+
+                    if (typeof fieldA === "string" && typeof fieldB === "string") {
+                        if (sorter.order === "asc") {
+                            return fieldA.localeCompare(fieldB);
+                        } else {
+                            return fieldB.localeCompare(fieldA);
+                        }
+                    }
+                    if (fieldA < fieldB) return sorter.order === "asc" ? -1 : 1;
+                    if (fieldA > fieldB) return sorter.order === "asc" ? 1 : -1;
+                    return 0;
+                });
+            }
+
+            const total = data.length;
+
+            const { current, pageSize } = pagination as any ?? {};
+
+            if (current && pageSize) {
+                const start = (current - 1) * pageSize;
+                const end = start + pageSize;
+                data = data.slice(start, end);
+            }
+
+            return { data: data as unknown as TData[], total };
         }
         return { data: [], total: 0 };
     },
