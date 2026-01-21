@@ -10,7 +10,7 @@ import { Subject } from "@/types"
 import { useMemo, useState, useEffect } from "react"
 import { Badge } from "@/components/ui/badge"
 import { ColumnDef, useReactTable } from "@tanstack/react-table"
-import { ShowButton } from "@/components/refine-ui/buttons/show"
+import { EditButton } from "@/components/refine-ui/buttons/edit"
 const SubjectsList = () => {
     const [searchQuery, setSearchQuery] = useState("")
     const [selectedDepartment, setSelectedDepartment] = useState("all")
@@ -57,14 +57,12 @@ const SubjectsList = () => {
         size: 140,
         header: () => <p className="column-title">Details</p>,
         cell: ({ row }) => (
-          <ShowButton
+          <EditButton
             resource="subjects"
             recordItemId={row.original.id}
             variant="outline"
             size="sm"
-          >
-            View
-          </ShowButton>
+          />
         ),
       },
     ],
